@@ -1,0 +1,67 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          String             @id @default(cuid())
+  email       String             @unique
+  name        String?
+  avatar      String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  credentials OAuthCredentials[]
+  memories    Memory[]
+  tasks       Task[]
+  chats       ChatHistory[]
+}
+
+model OAuthCredentials {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken  String   @db.Text
+  refreshToken String?  @db.Text
+  expiryDate   BigInt?
+  scope        String?
+  tokenType    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Memory {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  key       String
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, key])
+}
+
+model Task {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  completed Boolean   @default(false)
+  dueDate   DateTime?
+  priority  String    @default("medium")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model ChatHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        String   // "user" or "model"
+  content     String   @db.Text
+  toolsCalled String?  @db.Text // JSON string representing tool calls
+  createdAt   DateTime @default(now())
+}

@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --foreground-rgb: 226, 232, 240; /* slate-200 */
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: #050608;
+  font-family: 'Outfit', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(13, 16, 23, 0.4);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 240, 255, 0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 240, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 240, 255, 0.4);
+}
+
+/* Futuristic digital grid background */
+.cyber-grid {
+  background-image: 
+    linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center;
+}
+
+/* Glassmorphism primitives */
+.glass-panel {
+  background: rgba(13, 16, 23, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 240, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-card {
+  background: rgba(18, 24, 38, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 240, 255, 0.08);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: rgba(0, 240, 255, 0.25);
+  background: rgba(18, 24, 38, 0.55);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.glass-input {
+  background: rgba(8, 10, 15, 0.6);
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  color: #fff;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  border-color: rgba(0, 240, 255, 0.6);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+}
+
+/* Glowing text and objects */
+.text-glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+}
+
+.text-glow-purple {
+  text-shadow: 0 0 10px rgba(189, 0, 255, 0.5);
+}
+
+.border-glow-cyan {
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+}
+
+/* Futuristic voice wave loading indicator */
+.wave-bar {
+  display: inline-block;
+  width: 3px;
+  height: 10px;
+  background-color: #00f0ff;
+  border-radius: 3px;
+  animation: wave 1.2s ease-in-out infinite;
+}
+
+.wave-bar:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.wave-bar:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.wave-bar:nth-child(4) {
+  animation-delay: 0.45s;
+}
+
+@keyframes wave {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(3.5);
+  }
+}
