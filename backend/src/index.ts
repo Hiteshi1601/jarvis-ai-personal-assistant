@@ -20,6 +20,7 @@ import { listEvents } from './services/calendar.service';
 import Groq from 'groq-sdk';
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-dev-secret-key';
 const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
@@ -354,15 +355,18 @@ app.get("/", (req, res) => {
 
 
 // Local development server only
-if (process.env.NODE_ENV !== "production") {
-  const PORT = process.env.PORT || 5000;
+// if (process.env.NODE_ENV !== "production") {
+//   const PORT = process.env.PORT || 5000;
 
-  app.listen(PORT, () => {
-    console.log(
-      `🚀 JARVIS AI Backend Server running on http://localhost:${PORT}`
-    );
-  });
-}
+//   app.listen(PORT, () => {
+//     console.log(
+//       `🚀 JARVIS AI Backend Server running on http://localhost:${PORT}`
+//     );
+//   });
+// }
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
 
 // Export Express app for Vercel
