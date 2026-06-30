@@ -32,6 +32,19 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+// Diagnose environment variables
+app.get('/api/diagnose', (req, res) => {
+  res.json({
+    FRONTEND_URL: process.env.FRONTEND_URL || 'Not Set',
+    GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI || 'Not Set',
+    NODE_ENV: process.env.NODE_ENV || 'development',
+    PORT: process.env.PORT || 'Not Set',
+    HAS_DATABASE: !!process.env.DATABASE_URL,
+    HAS_GROQ: !!process.env.GROQ_API_KEY,
+    HAS_GOOGLE_CLIENT: !!process.env.GOOGLE_CLIENT_ID
+  });
+});
+
 // ==========================================
 // AUTHENTICATION ROUTES
 // ==========================================
