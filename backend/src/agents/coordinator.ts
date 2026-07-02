@@ -385,9 +385,9 @@ function getGroqTools(userMessage: string, recentHistory: any[] = []) {
 
   const isGmail = hasKeywords(['email', 'mail', 'gmail', 'inbox', 'unread', 'send', 'reply', 'message', 'thread']);
   const isCalendar = hasKeywords(['calendar', 'meeting', 'schedule', 'event', 'appointment', 'slot', 'date', 'time', 'free', 'busy', 'availability']);
-  const isSheets = hasKeywords(['sheet', 'spreadsheet', 'excel', 'row', 'column', 'cell']);
-  const isDrive = hasKeywords(['drive', 'folder', 'file', 'upload', 'delete', 'download']);
-  const isDocs = hasKeywords(['document', 'doc', 'text', 'paragraph', 'write', 'append']);
+  const isSheets = hasKeywords(['sheet', 'spreadsheet', 'excel', 'row', 'column', 'cell', 'sheets']);
+  const isDocs = hasKeywords(['document', 'doc', 'text', 'paragraph', 'write', 'append', 'docs']);
+  const isDrive = hasKeywords(['drive', 'folder', 'file', 'upload', 'delete', 'download']) || isSheets || isDocs;
   const isTasks = hasKeywords(['task', 'todo', 'checklist', 'remind', 'reminder', 'pending']);
   const isMemory = hasKeywords(['remember', 'preference', 'habit', 'interest', 'profile', 'saved', 'memory', 'forget']);
 
