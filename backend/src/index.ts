@@ -242,7 +242,18 @@ Output formatted as a JSON string array. Example: ["Review the quarterly budget 
           const endIdx = rawText.lastIndexOf(']');
           if (startIdx !== -1 && endIdx !== -1) {
             const jsonText = rawText.substring(startIdx, endIdx + 1);
-            aiRecommendations = JSON.parse(jsonText);
+            const parsed = JSON.parse(jsonText);
+            if (Array.isArray(parsed)) {
+              aiRecommendations = parsed.map(item => {
+                if (typeof item === 'string') return item;
+                if (item && typeof item === 'object') {
+                  return (item as any).recommendation || (item as any).text || (item as any).insight || JSON.stringify(item);
+                }
+                return String(item);
+              });
+            } else {
+              aiRecommendations = ["Stay productive today!", "Double check your email replies", "Keep your calendar organized"];
+            }
           } else {
             aiRecommendations = ["Stay productive today!", "Double check your email replies", "Keep your calendar organized"];
           }

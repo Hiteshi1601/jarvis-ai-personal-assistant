@@ -124,7 +124,11 @@ export default function WidgetsPanel({ data, loading, onTaskToggle, onTaskAdd }:
               {data.aiRecommendations.map((rec, i) => (
                 <div key={i} className="p-3 rounded-lg glass-card text-xs text-slate-300 flex items-start gap-2 border-l-2 border-l-cyber-blue">
                   <ArrowRight className="w-3.5 h-3.5 text-cyber-blue mt-0.5 flex-shrink-0" />
-                  <span>{rec}</span>
+                  <span>
+                    {typeof rec === 'object' && rec !== null
+                      ? (rec as any).recommendation || (rec as any).text || JSON.stringify(rec)
+                      : String(rec)}
+                  </span>
                 </div>
               ))}
               {data.aiRecommendations.length === 0 && (
