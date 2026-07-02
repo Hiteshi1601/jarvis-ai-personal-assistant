@@ -24,6 +24,7 @@ const PORT = process.env.PORT || 5000;
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-dev-secret-key';
 const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
+const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
 
 app.use(cors({
   origin: FRONTEND_URL,
@@ -226,7 +227,7 @@ Pending Tasks: ${JSON.stringify(tasks.map(t => t.title))}
 Output formatted as a JSON string array. Example: ["Review the quarterly budget sheet", "Reply to Bob's urgent meeting request", "Schedule prep for the demo session"]`;
 
           const completion = await groq.chat.completions.create({
-            model: "llama-3.3-70b-versatile",
+            model: GROQ_MODEL,
             messages: [
               {
                 role: "user",

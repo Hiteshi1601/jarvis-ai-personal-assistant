@@ -10,6 +10,7 @@ import * as driveService from '../services/drive.service';
 import * as docsService from '../services/docs.service';
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
+const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
 
 // Define status logs structure
 export interface ExecutionLog {
@@ -537,7 +538,7 @@ Never use dummy placeholder IDs like "your_spreadsheet_id" or "YOUR_DOCUMENT_ID"
       loopCount++;
       
       const completion = await groq.chat.completions.create({
-        model: 'llama-3.3-70b-versatile',
+        model: GROQ_MODEL,
         messages,
         tools: getGroqTools(userMessage, recentHistory),
         tool_choice: 'auto'
