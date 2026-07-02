@@ -1,5 +1,8 @@
 # JARVIS AI - Personal Google Productivity Assistant
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://jarvis-ai-personal-assistant-app.vercel.app)
+[![Backend Status](https://img.shields.io/badge/Backend-Render-4640FF?style=for-the-badge&logo=render&logoColor=white)](https://jarvis-ai-personal-assistant-1.onrender.com)
+
 JARVIS AI is a premium, cinematic, full-stack AI Assistant designed to automate your Google Workspace ecosystem (Gmail, Calendar, Sheets, Drive, Docs) using the Groq API, secure Google OAuth 2.0, and a persistent PostgreSQL database memory store.
 
 The interface is inspired by high-end design languages such as Apple Vision Pro, Tesla, Linear, and Raycast, combining a dark futuristic look with glowing cyan/purple indicators, glassmorphic cards, and dynamic voice/thinking wave indicators.
