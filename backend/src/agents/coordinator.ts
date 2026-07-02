@@ -375,9 +375,43 @@ const workspaceTools = {
 
 /**
  * Dynamic adapter to convert Gemini workspace tool definitions into Groq/OpenAI compatible tools format.
+ * Dynamically filters tools to respect Groq free tier token rate limits (TPM).
  */
-function getGroqTools() {
-  return workspaceTools.functionDeclarations.map(decl => {
+function getGroqTools(userMessage: string, recentHistory: any[] = []) {
+  // Combine userMessage with history to detect intent contextually
+  const contextText = (userMessage + ' ' + recentHistory.map(h => h.content || '').join(' ')).toLowerCase();
+
+  const hasKeywords = (keywords: string[]) => keywords.some(k => contextText.includes(k));
+
+  const isGmail = hasKeywords(['email', 'mail', 'gmail', 'inbox', 'unread', 'send', 'reply', 'message', 'thread']);
+  const isCalendar = hasKeywords(['calendar', 'meeting', 'schedule', 'event', 'appointment', 'slot', 'date', 'time', 'free', 'busy', 'availability']);
+  const isSheets = hasKeywords(['sheet', 'spreadsheet', 'excel', 'row', 'column', 'cell']);
+  const isDrive = hasKeywords(['drive', 'folder', 'file', 'upload', 'delete', 'download']);
+  const isDocs = hasKeywords(['document', 'doc', 'text', 'paragraph', 'write', 'append']);
+  const isTasks = hasKeywords(['task', 'todo', 'checklist', 'remind', 'reminder', 'pending']);
+  const isMemory = hasKeywords(['remember', 'preference', 'habit', 'interest', 'profile', 'saved', 'memory', 'forget']);
+
+  const filteredDecls = workspaceTools.functionDeclarations.filter(decl => {
+    const name = decl.name;
+    if (name.startsWith('gmail_')) return isGmail;
+    if (name.startsWith('calendar_')) return isCalendar;
+    if (name.startsWith('sheets_')) return isSheets;
+    if (name.startsWith('drive_')) return isDrive;
+    if (name.startsWith('docs_')) return isDocs;
+    if (name.startsWith('tasks_')) return isTasks;
+    if (name.startsWith('memory_')) return isMemory;
+    return true;
+  });
+
+  // Default baseline if no matches found
+  let finalDecls = filteredDecls;
+  if (finalDecls.length === 0) {
+    finalDecls = workspaceTools.functionDeclarations.filter(decl => 
+      decl.name.startsWith('memory_') || decl.name.startsWith('tasks_') || decl.name.startsWith('gmail_')
+    );
+  }
+
+  return finalDecls.map(decl => {
     const properties: any = {};
     if (decl.parameters && decl.parameters.properties) {
       for (const [key, prop] of Object.entries(decl.parameters.properties as any)) {
@@ -473,8 +507,8 @@ Always explain the actions you took clearly in your final response.`;
       content: systemInstruction
     });
 
-    // Add past history (limit to last 10 messages for token savings)
-    const recentHistory = history.slice(-10);
+    // Add past history (limit to last 6 messages for token savings)
+    const recentHistory = history.slice(-6);
     recentHistory.forEach(h => {
       messages.push({
         role: h.role === 'user' ? 'user' : 'assistant',
@@ -499,7 +533,7 @@ Always explain the actions you took clearly in your final response.`;
       const completion = await groq.chat.completions.create({
         model: 'llama-3.3-70b-versatile',
         messages,
-        tools: getGroqTools(),
+        tools: getGroqTools(userMessage, recentHistory),
         tool_choice: 'auto'
       });
 
