@@ -16,7 +16,7 @@ function getCleanRedirectUri(): string {
       rawUrl = matches[0];
     }
   }
-  rawUrl = rawUrl.replace(/\/+$/, '');
+  rawUrl = rawUrl.replace(/\/+$/, '').replace('-app.vercel.app', '.vercel.app');
 
   if (!rawUrl || rawUrl.includes('onrender.com') || !rawUrl.startsWith('http')) {
     if (process.env.NODE_ENV === 'production') {

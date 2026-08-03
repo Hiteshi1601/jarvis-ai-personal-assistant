@@ -37,7 +37,7 @@ function getCleanFrontendUrl(): string {
       rawUrl = matches[0];
     }
   }
-  rawUrl = rawUrl.replace(/\/+$/, '');
+  rawUrl = rawUrl.replace(/\/+$/, '').replace('-app.vercel.app', '.vercel.app');
   
   // Auto-recover if FRONTEND_URL is corrupted with backend Render URL in production
   if (rawUrl.includes('onrender.com') || !rawUrl.startsWith('http')) {
