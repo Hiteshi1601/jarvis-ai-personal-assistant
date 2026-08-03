@@ -15,7 +15,18 @@ export interface AuthenticatedRequest extends Request {
  * Authentication middleware to verify JWT cookie
  */
 export function requireAuth(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-  const token = req.cookies?.token;
+  let token = req.cookies?.token;
+
+  if (!token && req.headers.authorization) {
+    const parts = req.headers.authorization.split(' ');
+    if (parts.length === 2 && parts[0].toLowerCase() === 'bearer') {
+      token = parts[1];
+    }
+  }
+
+  if (!token && typeof req.query.token === 'string') {
+    token = req.query.token;
+  }
 
   if (!token) {
     return res.status(401).json({ error: 'Authentication required. No session token found.' });

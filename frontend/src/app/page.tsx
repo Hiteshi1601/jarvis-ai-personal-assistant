@@ -20,6 +20,15 @@ import {
 
 import { API_URL } from '../config/api';
 
+const getAuthHeaders = (extraHeaders: Record<string, string> = {}) => {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('jarvis_token') : null;
+  const headers: Record<string, string> = { ...extraHeaders };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return headers;
+};
+
 export default function Home() {
   const { user, loading: authLoading, login } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -45,7 +54,8 @@ export default function Home() {
     if (!user) return;
     try {
       const res = await fetch(`${API_URL}/api/workspace/dashboard-data`, {
-        credentials: 'include'
+        credentials: 'include',
+        headers: getAuthHeaders()
       });
       if (res.ok) {
         const data = await res.json();
@@ -63,7 +73,8 @@ export default function Home() {
     if (!user) return;
     try {
       const res = await fetch(`${API_URL}/api/memories`, {
-        credentials: 'include'
+        credentials: 'include',
+        headers: getAuthHeaders()
       });
       if (res.ok) {
         const data = await res.json();
@@ -78,7 +89,8 @@ export default function Home() {
     try {
       const res = await fetch(`${API_URL}/api/memories/${memoryId}`, {
         method: 'DELETE',
-        credentials: 'include'
+        credentials: 'include',
+        headers: getAuthHeaders()
       });
       if (res.ok) {
         fetchSettingsMemory();
@@ -109,7 +121,7 @@ export default function Home() {
     try {
       const res = await fetch(`${API_URL}/api/tasks/${taskId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ completed }),
         credentials: 'include'
       });
@@ -126,7 +138,7 @@ export default function Home() {
     try {
       const res = await fetch(`${API_URL}/api/tasks`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ title, priority: 'medium' }),
         credentials: 'include'
       });
@@ -160,7 +172,7 @@ export default function Home() {
 
       const res = await fetch(`${API_URL}/api/agent/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ message: text, history: historyPayload }),
         credentials: 'include'
       });

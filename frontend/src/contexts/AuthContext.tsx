@@ -28,15 +28,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkAuthStatus = async () => {
     try {
+      let savedToken = typeof window !== 'undefined' ? localStorage.getItem('jarvis_token') : null;
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tokenParam = urlParams.get('token');
+        if (tokenParam) {
+          savedToken = tokenParam;
+          localStorage.setItem('jarvis_token', tokenParam);
+          const newUrl = window.location.pathname;
+          window.history.replaceState({}, document.title, newUrl);
+        }
+      }
+
+      const headers: Record<string, string> = {};
+      if (savedToken) {
+        headers['Authorization'] = `Bearer ${savedToken}`;
+      }
+
       const res = await fetch(`${API_URL}/api/auth/status`, {
-        credentials: 'include'
+        credentials: 'include',
+        headers
       });
       if (res.ok) {
         const data = await res.json();
         if (data.authenticated) {
           setUser(data.user);
+          if (data.token) {
+            localStorage.setItem('jarvis_token', data.token);
+          }
         } else {
           setUser(null);
+          localStorage.removeItem('jarvis_token');
         }
       }
     } catch (err) {
@@ -54,16 +76,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/auth/logout`, {
-        method: 'POST',
-        credentials: 'include'
-      });
-      if (res.ok) {
-        setUser(null);
-        window.location.reload();
+      const savedToken = typeof window !== 'undefined' ? localStorage.getItem('jarvis_token') : null;
+      const headers: Record<string, string> = {};
+      if (savedToken) {
+        headers['Authorization'] = `Bearer ${savedToken}`;
       }
+      await fetch(`${API_URL}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+        headers
+      });
     } catch (err) {
       console.error('Logout failed:', err);
+    } finally {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('jarvis_token');
+      }
+      setUser(null);
+      window.location.reload();
     }
   };
 

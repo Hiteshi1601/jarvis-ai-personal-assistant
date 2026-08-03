@@ -109,12 +109,12 @@ app.get('/api/auth/google/callback', async (req, res) => {
     res.cookie('token', sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
-    // Redirect user back to Next.js frontend
-    res.redirect(`${FRONTEND_URL}/`);
+    // Redirect user back to Next.js frontend with token parameter for fail-safe auth
+    res.redirect(`${FRONTEND_URL}/?token=${encodeURIComponent(sessionToken)}`);
   } catch (err: any) {
     console.error('OAuth Callback Error:', err);
     res.redirect(`${FRONTEND_URL}/auth-error?reason=callback_failed`);
@@ -125,7 +125,19 @@ app.get('/api/auth/google/callback', async (req, res) => {
  * Check Auth Status
  */
 app.get('/api/auth/status', (req: AuthenticatedRequest, res) => {
-  const token = req.cookies?.token;
+  let token = req.cookies?.token;
+
+  if (!token && req.headers.authorization) {
+    const parts = req.headers.authorization.split(' ');
+    if (parts.length === 2 && parts[0].toLowerCase() === 'bearer') {
+      token = parts[1];
+    }
+  }
+
+  if (!token && typeof req.query.token === 'string') {
+    token = req.query.token;
+  }
+
   if (!token) {
     return res.json({ authenticated: false });
   }
@@ -134,6 +146,7 @@ app.get('/api/auth/status', (req: AuthenticatedRequest, res) => {
     const decoded = jwt.verify(token, JWT_SECRET) as any;
     return res.json({
       authenticated: true,
+      token,
       user: {
         userId: decoded.userId,
         email: decoded.email,
