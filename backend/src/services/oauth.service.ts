@@ -4,7 +4,33 @@ import { encrypt, decrypt } from '../utils/encryption';
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
-const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'http://localhost:5000/api/auth/google/callback';
+
+function getCleanRedirectUri(): string {
+  let rawUrl = (process.env.GOOGLE_REDIRECT_URI || '').trim();
+  const matches = rawUrl.match(/https?:\/\/[^\s"'<>]+/g);
+  if (matches && matches.length > 0) {
+    const vercelMatch = matches.reverse().find(m => m.includes('vercel.app'));
+    if (vercelMatch) {
+      rawUrl = vercelMatch;
+    } else {
+      rawUrl = matches[0];
+    }
+  }
+  rawUrl = rawUrl.replace(/\/+$/, '');
+
+  if (!rawUrl || rawUrl.includes('onrender.com') || !rawUrl.startsWith('http')) {
+    if (process.env.NODE_ENV === 'production') {
+      return 'https://jarvis-ai-personal-assistant.vercel.app/oauth2callback';
+    }
+    return 'http://localhost:3000/oauth2callback';
+  }
+
+  if (rawUrl.includes('vercel.app') && !rawUrl.endsWith('/oauth2callback')) {
+    rawUrl = `${rawUrl}/oauth2callback`;
+  }
+
+  return rawUrl;
+}
 
 export const SCOPES = [
   'https://www.googleapis.com/auth/userinfo.email',
@@ -20,7 +46,8 @@ export const SCOPES = [
  * Creates a new Google OAuth2 Client
  */
 export function createOAuth2Client() {
-  return new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+  const redirectUri = getCleanRedirectUri();
+  return new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, redirectUri);
 }
 
 /**
