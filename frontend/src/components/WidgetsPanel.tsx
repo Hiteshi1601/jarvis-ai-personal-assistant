@@ -12,7 +12,7 @@ import {
   ArrowRight,
   ShieldAlert
 } from 'lucide-react';
-
+import { API_URL } from '../config/api';
 interface Task {
   id: string;
   title: string;
@@ -106,7 +106,7 @@ export default function WidgetsPanel({ data, loading, onTaskToggle, onTaskAdd }:
                 Connect your Google account in settings to allow JARVIS to read/write emails, events, and sheets.
               </p>
               <a
-                href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/google`}
+                href={`${API_URL}/api/auth/google`}
                 className="w-full text-center py-2 rounded bg-red-500 text-white font-bold text-xs hover:bg-red-600 transition-all"
               >
                 CONNECT GOOGLE ACCOUNT

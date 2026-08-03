@@ -3,6 +3,8 @@
 import React, { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+import { API_URL } from '../../config/api';
+
 function CallbackHandler() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -10,8 +12,7 @@ function CallbackHandler() {
   useEffect(() => {
     const code = searchParams.get('code');
     if (code) {
-      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-      window.location.href = `${backendUrl}/api/auth/google/callback?code=${code}`;
+      window.location.href = `${API_URL}/api/auth/google/callback?code=${code}`;
     } else {
       router.push('/auth-error?reason=no_code_provided');
     }

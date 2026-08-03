@@ -18,7 +18,7 @@ import {
   ExternalLink
 } from 'lucide-react';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { API_URL } from '../config/api';
 
 export default function Home() {
   const { user, loading: authLoading, login } = useAuth();
