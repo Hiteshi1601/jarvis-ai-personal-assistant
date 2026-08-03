@@ -21,10 +21,32 @@ import Groq from 'groq-sdk';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-dev-secret-key';
 const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
-const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.3-70b-versatile';
+const GROQ_MODEL = process.env.GROQ_MODEL || 'llama-3.1-8b-instant';
+
+function getCleanFrontendUrl(): string {
+  let rawUrl = (process.env.FRONTEND_URL || 'http://localhost:3000').trim();
+  const matches = rawUrl.match(/https?:\/\/[^\s"'<>]+/g);
+  if (matches && matches.length > 0) {
+    // Search for a clean Vercel frontend URL in case of accidental string concatenation
+    const vercelMatch = matches.reverse().find(m => m.includes('vercel.app'));
+    if (vercelMatch) {
+      rawUrl = vercelMatch;
+    } else {
+      rawUrl = matches[0];
+    }
+  }
+  rawUrl = rawUrl.replace(/\/+$/, '');
+  
+  // Auto-recover if FRONTEND_URL is corrupted with backend Render URL in production
+  if (rawUrl.includes('onrender.com') || !rawUrl.startsWith('http')) {
+    rawUrl = 'https://jarvis-ai-personal-assistant.vercel.app';
+  }
+  return rawUrl;
+}
+
+const FRONTEND_URL = getCleanFrontendUrl();
 
 app.use(cors({
   origin: FRONTEND_URL,
